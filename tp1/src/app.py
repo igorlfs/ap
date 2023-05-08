@@ -2,17 +2,24 @@ import argparse as arg
 from .model import driver
 
 
+class Args:
+    def __init__(self, hidden: int, rate: int, batch: int) -> None:
+        self.hidden = hidden
+        self.rate = rate
+        self.batch = batch
+
+
 def arg_parser():
     parser: arg.ArgumentParser = arg.ArgumentParser(
-        description="Gera um modelo do MNIST"
+        description="Monta uma rede neural para resolver o dataset MNIST."
     )
 
     parser.add_argument(
-        "--hidden-layer",
+        "--hidden",
         dest="hidden",
         required=True,
         type=int,
-        help="Número de unidades na camada oculta",
+        help="Número de unidades na camada oculta.",
     )
 
     parser.add_argument(
@@ -20,32 +27,21 @@ def arg_parser():
         dest="rate",
         required=True,
         type=float,
-        help="Taxa de aprendizado",
-    )
-
-    parser.add_argument(
-        "--grad",
-        dest="grad",
-        required=True,
-        type=str,
-        help="Algoritmo de cálculo de gradiente",
+        help="Taxa de aprendizado.",
     )
 
     parser.add_argument(
         "--batch",
         dest="batch",
-        required=False,
+        required=True,
         type=int,
-        help="Tamanho do mini-batch",
+        help="Tamanho do Batch. Use para controlar qual algoritmo será usado.",
     )
     args = parser.parse_args()
 
-    if (args.grad == "mini") and (args.batch is None):
-        parser.error("--batch é obrigatório para o algoritmo de mini-batch")
-
-    return args
+    return args.hidden, args.rate, args.batch
 
 
-def run() -> None:
-    args = arg_parser()
-    driver(args.hidden, args.rate, args.grad, args.batch)
+def run():
+    args = Args(*arg_parser())
+    driver(args.hidden, args.rate, args.batch)

@@ -1,7 +1,7 @@
 from keras.api._v2 import keras as KerasAPI
 
 
-def driver(hidden: int, rate: float, grad: str, batch: int | None):
+def driver(hidden: int, rate: float, batch: int):
     # Get data
     mnist = KerasAPI.datasets.mnist
     # Split
@@ -21,15 +21,14 @@ def driver(hidden: int, rate: float, grad: str, batch: int | None):
     metrics = ["accuracy"]
     # Compile
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+    # Epochs
+    if batch == 1:
+        epochs = 3
+    elif batch == len(x_train):  # 60000
+        epochs = 100
+    else:
+        epochs = 5
     # Training loop
-    match grad:
-        case "gd":
-            model.fit(x_train, y_train, batch_size=len(x_train), epochs=100)
-        case "sgd":
-            # unfortunately this doesn't work
-            # model.fit(x_train, y_train, batch_size=1, epochs=3)
-            pass
-        case "mini":
-            model.fit(x_train, y_train, batch_size=batch, epochs=5)
+    model.fit(x_train, y_train, batch_size=batch, epochs=epochs)
     # Evaluate
     print(model.evaluate(x_test, y_test))
