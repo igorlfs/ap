@@ -1,47 +1,29 @@
-import argparse as arg
-from .model import driver
-
-
-class Args:
-    def __init__(self, hidden: int, rate: int, batch: int) -> None:
-        self.hidden = hidden
-        self.rate = rate
-        self.batch = batch
-
-
-def arg_parser():
-    parser: arg.ArgumentParser = arg.ArgumentParser(
-        description="Monta uma rede neural para resolver o dataset MNIST."
-    )
-
-    parser.add_argument(
-        "--hidden",
-        dest="hidden",
-        required=True,
-        type=int,
-        help="Número de unidades na camada oculta.",
-    )
-
-    parser.add_argument(
-        "--rate",
-        dest="rate",
-        required=True,
-        type=float,
-        help="Taxa de aprendizado.",
-    )
-
-    parser.add_argument(
-        "--batch",
-        dest="batch",
-        required=True,
-        type=int,
-        help="Tamanho do Batch. Use para controlar qual algoritmo será usado.",
-    )
-    args = parser.parse_args()
-
-    return args.hidden, args.rate, args.batch
+import seaborn as sns
+from .util import (
+    generate_data_var_batches,
+    generate_data_var_hidden,
+    generate_data_var_rate,
+    plot_var,
+    plot_var_batch,
+)
 
 
 def run():
-    args = Args(*arg_parser())
-    driver(args.hidden, args.rate, args.batch)
+    sns.set_style("darkgrid")
+
+    metrics = ["loss", "sparse_categorical_accuracy"]
+
+    hidden_layer_sizes = [25, 50, 100]
+    history = generate_data_var_hidden(hidden_layer_sizes)
+    for metric in metrics:
+        plot_var(hidden_layer_sizes, history, metric, "Hidden Layer Size")
+
+    learning_rates = [0.5, 1, 10]
+    history = generate_data_var_rate(learning_rates)
+    for metric in metrics:
+        plot_var(learning_rates, history, metric, "Learning Rate")
+
+    batch_sizes = [1, 20, 50, 60000]
+    history = generate_data_var_batches(batch_sizes)
+    for metric in metrics:
+        plot_var_batch(batch_sizes, history, metric)

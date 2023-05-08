@@ -1,2 +1,7 @@
 **/__pycache__
 **/.jukit
+
+# Reports
+tp1/report/report.*
+!tp1/report/report.tex
+!tp1/report/report.pdf
