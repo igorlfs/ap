@@ -1,11 +1,7 @@
 import seaborn as sns
-from .util import (
-    generate_data_var_batches,
-    generate_data_var_hidden,
-    generate_data_var_rate,
-    plot_var,
-    plot_var_batch,
-)
+
+from .util import (generate_data_var_batches, generate_data_var_hidden,
+                   generate_data_var_rate, plot_var, plot_var_batch)
 
 
 def run():

@@ -1,30 +1,30 @@
-from keras.api._v2 import keras as KerasAPI
 import matplotlib
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
+import seaborn as sns
+from tensorflow import keras
 
 matplotlib.use("GTK3Agg")
 
 
 def model(hidden: int, rate: float, batch: int):
     # Get data
-    mnist = KerasAPI.datasets.mnist
+    mnist = keras.datasets.mnist
     # Split
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
     # Normalize
     x_train, x_test = x_train / 255.0, x_test / 255.0
     # Model
-    model = KerasAPI.models.Sequential(
+    model = keras.models.Sequential(
         [
-            KerasAPI.layers.Flatten(input_shape=(28, 28)),
-            KerasAPI.layers.Dense(hidden, activation="relu"),
-            KerasAPI.layers.Dense(10),
+            keras.layers.Flatten(input_shape=(28, 28)),
+            keras.layers.Dense(hidden, activation="relu"),
+            keras.layers.Dense(10),
         ]
     )
-    loss = KerasAPI.losses.SparseCategoricalCrossentropy(from_logits=True)
-    optimizer = KerasAPI.optimizers.SGD(learning_rate=rate)
-    metrics = KerasAPI.metrics.SparseCategoricalAccuracy()
+    loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    optimizer = keras.optimizers.SGD(learning_rate=rate)
+    metrics = keras.metrics.SparseCategoricalAccuracy()
     # Compile
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
     # Epochs
@@ -60,7 +60,7 @@ def title_and_labels(xlabel: str, ylabel: str):
 def plot_var(var: list[int], history, metric: str, var_name: str):
     for i, j in zip(var, history):
         sns.lineplot(
-            x=range(1, len(j.history[metric]) + 1),
+            x=range(2, len(j.history[metric]) + 1),
             y=j.history[metric],
             label=f"{var_name}: {i}",
         )
