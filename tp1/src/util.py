@@ -60,7 +60,7 @@ def title_and_labels(xlabel: str, ylabel: str):
 def plot_var(var: list[int], history, metric: str, var_name: str):
     for i, j in zip(var, history):
         sns.lineplot(
-            x=range(2, len(j.history[metric]) + 1),
+            x=range(1, len(j.history[metric]) + 1),
             y=j.history[metric],
             label=f"{var_name}: {i}",
         )
