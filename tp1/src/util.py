@@ -18,7 +18,7 @@ def model(hidden: int, rate: float, batch: int):
     model = keras.models.Sequential(
         [
             keras.layers.Flatten(input_shape=(28, 28)),
-            keras.layers.Dense(hidden, activation="relu"),
+            keras.layers.Dense(hidden, activation="sigmoid"),
             keras.layers.Dense(10),
         ]
     )
