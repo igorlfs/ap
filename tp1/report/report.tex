@@ -89,16 +89,16 @@ As variações de algoritmo foram controladas alterando-se o parâmetro \textit{
 
 \begin{figure}[H]
   \begin{center}
-  {\includegraphics[height=7cm]{./images/Loss_over_Epoch_var_Alg.png}}
+  {\includegraphics[height=7cm]{./images/Accuracy_over_Epoch_var_Alg.png}}
   \end{center}
-  \caption{Acurácia por progresso em épocas, variando o algoritmo. \label{fig:lep}}
+  \caption{Acurácia por progresso em épocas, variando o algoritmo.\label{fig:aep}}
 \end{figure}
 
 \begin{figure}[H]
   \begin{center}
-  {\includegraphics[height=7cm]{./images/Accuracy_over_Epoch_var_Alg.png}}
+  {\includegraphics[height=7cm]{./images/Loss_over_Epoch_var_Alg.png}}
   \end{center}
-  \caption{Acurácia por progresso em épocas, variando o algoritmo.\label{fig:aep}}
+  \caption{Acurácia por progresso em épocas, variando o algoritmo. \label{fig:lep}}
 \end{figure}
 
 Todos os algoritmos tiveram um desempenho razoável. É possível que, com mais épocas, o SGD se saísse melhor, mas infelizmente ele demanda muito tempo de execução. Similarmente, com mais épocas, o GD poderia ter se saído um pouco melhor. No entanto, o MB certamente é superior nesse caso, convergindo muito mais rapidamente, independentemente do tamanho do \textit{batch}. Isso acontece pois o MB é um equilíbrio razoável entre o acúmulo de ajustes constantes aos pesos com a quantidade de dados usada para fazer esses ajustes.
