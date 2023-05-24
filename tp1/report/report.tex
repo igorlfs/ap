@@ -59,7 +59,7 @@ Foi fixada uma taxa de aprendizado $l_R = 1$ e um algoritmo de \textit{Mini-Batc
   \caption{Perda por época, variando o tamanho da rede. \label{fig:leh}}
 \end{figure}
 
-Como é de se esperar, o aumento do tamanho da rede melhorou a performance. Com mais neurônios é possível fazer ajustes mais sensíveis aos dados.
+Como é de se esperar, o aumento do tamanho da rede melhorou a performance. Com mais neurônios é possível fazer ajustes mais sensíveis aos dados. De fato, o desempenho da rede é tão alto para a camada com 100 neurônios que é possível que tenha ocorrido um \textit{overfitting}.
 
 \subsection{Taxa de Aprendizado}%
 \label{sub:Taxa de Aprendizado}
@@ -80,27 +80,27 @@ Foi fixada um tamanho de camada oculta igual a 50, e o algoritmo de \textit{Mini
   \caption{Perda por época, variando a taxa de aprendizado. \label{fig:ler}}
 \end{figure}
 
-Como visto em aula, uma taxa de aprendizado muito alta pode prejudicar a qualidade do modelo. Isso acontece porque a função de perda “pula” possíveis mínimos locais. Apesar de ter convergido nessa execução, o desempenho para a taxa igual a 10 não é diferente de um modelo que chuta que todos os dígitos são o número 9. Por outro lado, as taxas de 0.5 e 1, para essa execução, foram muito próximas em desempenho. No entanto, é comum que a taxa de 0.5 seja estatisticamente melhor. De fato, as taxas tradicionalmente usadas são muito menores do que as descritas na especificação: na faixa de 0.001 a 0.01. Por outro lado, uma taxa de aprendizado muito baixa também poderia aumentar o número de épocas para convergência.
+Como visto em aula, uma taxa de aprendizado muito alta pode prejudicar a qualidade do modelo. De fato, as taxas tradicionalmente usadas são muito menores do que as descritas na especificação: na faixa de 0.0001 a 0.01. Uma taxa de aprendizado muito baixa pode aumentar o número de épocas para convergência. Por outro lado, uma taxa de aprendizado muito alta pode fazer o modelo não convergir. Esse não foi o caso, apesar de que para a taxa igual a 10, é nítido o efeito na qualidade do modelo.
 
 \subsection{Algoritmo}%
 \label{sub:Algoritmo}
 
-As variações de algoritmo foram controladas alterando-se o parâmetro \textit{batch\_size}, da função \textit{fit()} do modelo. Em princípio, todos os algoritmos são o \textit{Mini-Batch}. Para criar um SGD, basta usar uma \textit{batch} de tamanho 1 e para criar um GD, é preciso usar uma taxa de aprendizado igual ao número de dados de treino. O número de épocas também precisou ser ajeitado: é preciso dar mais oportunidades de ajustes no GD, porque seus ajustes são muito infrequentes. Além disso, o tempo de execução do SGD é muito grande. Nos gráficos, o eixo $x$ representa o “progresso” do algoritmo (normalizado pelo número de épocas), cada ponto corresponde a uma época. A taxa de aprendizado, fixada em 1, e o número de neurônios, fixado em 50 foram escolhidos experimentalmente.
+As variações de algoritmo foram controladas alterando-se o parâmetro \textit{batch\_size}, da função \textit{fit()} do modelo. Em princípio, todos os algoritmos são o \textit{Mini-Batch}. Para criar um SGD, basta usar uma \textit{batch} de tamanho 1 e para criar um GD, é preciso usar uma taxa de aprendizado igual ao número de dados de treino. O número de épocas também precisou ser ajeitado: é preciso dar mais oportunidades de ajustes no GD, porque seus ajustes são muito infrequentes. Além disso, o tempo de execução do SGD é muito grande. Nos gráficos, o eixo $x$ representa o “progresso” do algoritmo (normalizado pelo número de épocas), cada ponto corresponde a uma época. Para os algoritmos de SGD e MB foram feitas 15 épocas e, para o SGD, 100 épocas. A taxa de aprendizado, fixada em 1, e o número de neurônios, fixado em 50 foram escolhidos experimentalmente, como nos outros casos.
 
 \begin{figure}[H]
   \begin{center}
-  {\includegraphics[height=7cm]{./images/Loss_over_Epoch_Progress.png}}
+  {\includegraphics[height=7cm]{./images/Loss_over_Epoch_var_Alg.png}}
   \end{center}
   \caption{Acurácia por progresso em épocas, variando o algoritmo. \label{fig:lep}}
 \end{figure}
 
 \begin{figure}[H]
   \begin{center}
-  {\includegraphics[height=7cm]{./images/Accuracy_over_Epoch_Progress.png}}
+  {\includegraphics[height=7cm]{./images/Accuracy_over_Epoch_var_Alg.png}}
   \end{center}
   \caption{Acurácia por progresso em épocas, variando o algoritmo.\label{fig:aep}}
 \end{figure}
 
-O SGD teve um péssimo desempenho, também indiferente a apenas chutar algum número em particular. Como são feitos ajustes a cada dado, é como se o SGD “decorasse” o dado em questão. O GD, com 100 épocas, teve um desempenho similar ao MB (\textit{batch\_size = 50}). Com a diminuição do tamanho da \textit{batch}, o desempenho piorou consideravelmente. Uma provável causa para isso se deve aos ajustes dos pesos do modelo serem feitos de forma demasiadamente local, quando se considera apenas uma \textit{batch} com 20 dados.
+Todos os algoritmos tiveram um desempenho razoável. É possível que, com mais épocas, o SGD se saísse melhor, mas infelizmente ele demanda muito tempo de execução. Similarmente, com mais épocas, o GD poderia ter se saído um pouco melhor. No entanto, o MB certamente é superior nesse caso, convergindo muito mais rapidamente, independentemente do tamanho do \textit{batch}. Isso acontece pois o MB é um equilíbrio razoável entre o acúmulo de ajustes constantes aos pesos com a quantidade de dados usada para fazer esses ajustes.
 
 \end{document}

@@ -28,12 +28,7 @@ def model(hidden: int, rate: float, batch: int):
     # Compile
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
     # Epochs
-    if batch == 1:
-        epochs = 3
-    elif batch == len(x_train):  # 60000
-        epochs = 100
-    else:
-        epochs = 10
+    epochs = 100 if batch == len(x_train) else 15
     # Training loop
     history = model.fit(
         x_train,
@@ -89,7 +84,7 @@ def generate_data_var_batches(batch_sizes: list[int]):
 
 
 def plot_var_batch(batch_sizes: list[int], history, metric: str):
-    num_of_epochs = [3, 10, 10, 100]
+    num_of_epochs = [15, 15, 15, 100]
     for i in range(len(batch_sizes)):
         sns.lineplot(
             x=np.linspace(0, 1, num_of_epochs[i]),
