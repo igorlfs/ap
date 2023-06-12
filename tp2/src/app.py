@@ -102,8 +102,8 @@ weights_copy = weights.copy()
 for n in range(ITERATIONS):
     best_stump = min(stumps_copy, key=lambda s: np.sum(weights_copy[s.indexes]))
 
-    error = calculate_error([best_stump], labels)
-    alpha: float = 0.5 * (np.log2(1 - error) - np.log2(error))
+    error = np.sum(weights_copy[best_stump.indexes])
+    alpha: float = 0.5 * (np.log(1 - error) - np.log(error))
 
     best_stump.alpha = alpha
     boost.append(best_stump)
