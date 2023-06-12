@@ -11,13 +11,14 @@ DATASET_PATH = "sample.csv"
 # DATASET_PATH = "../sample.csv"
 LABEL = "label"
 DATA_VALUES = ["x", "o", "b"]
-LABEL_FALSE = 0
-LABEL_TRUE = 1
+LABEL_FALSE = "negative"
+LABEL_TRUE = "positive"
 DATASET_PATH = "data/tic-tac-toe.data"
 # DATASET_PATH = "../data/tic-tac-toe.data"
 
 # |%%--%%| <aueYcM7o6y|9ghqUTyxtX>
 
+# Ignore o ID dos vampiros
 df = pd.read_csv(DATASET_PATH, usecols=lambda x: x != "id")
 
 # |%%--%%| <9ghqUTyxtX|53lof3gjkn>
@@ -77,7 +78,7 @@ for column in df.columns:
     if column != LABEL:
         for v in DATA_VALUES:
             fail_indexes = df.query(
-                f"({column} == '{v}' and {LABEL} == {LABEL_FALSE}) or ({column} != '{v}' and {LABEL} == {LABEL_TRUE})"
+                f"({column} == '{v}' and {LABEL} == '{LABEL_FALSE}') or ({column} != '{v}' and {LABEL} == '{LABEL_TRUE}')"
             ).index.to_numpy()
             stumps.append(Stump(fail_indexes, f"{column} == {v}"))
 
