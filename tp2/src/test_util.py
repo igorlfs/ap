@@ -1,6 +1,5 @@
 import numpy as np
-
-from .app import Stump, calculate_error, get_predictions
+from src.util import Stump, calculate_error, get_predictions
 
 
 def test_get_predictions():
