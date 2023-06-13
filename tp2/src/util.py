@@ -4,13 +4,13 @@ import pandas as pd
 
 class Stump:
     def __init__(self, indexes: np.ndarray, name: str, query: str):
-        self.indexes = indexes
+        self.train_fail_indexes = indexes
         self.name = name
         self.query = query
         self.alpha = np.inf
 
     def __str__(self):
-        return f"{self.name}, ({len(self.indexes)}) {self.indexes}"
+        return f"{self.name}, ({len(self.train_fail_indexes)}) {self.train_fail_indexes}"
 
     def __repr__(self):
         return str(self)
@@ -24,9 +24,9 @@ class Boost:
         self.boost: list[Stump] = []
 
     def iteration(self):
-        best_stump = min(self.stumps, key=lambda s: np.sum(self.weights[s.indexes]))
+        best_stump = min(self.stumps, key=lambda s: np.sum(self.weights[s.train_fail_indexes]))
 
-        error = np.sum(self.weights[best_stump.indexes])
+        error = np.sum(self.weights[best_stump.train_fail_indexes])
         alpha: float = 0.5 * (np.log(1 - error) - np.log(error))
 
         best_stump.alpha = alpha
@@ -51,8 +51,8 @@ def get_predictions(boost: list[Stump], y: np.ndarray) -> np.ndarray:
         for j in range(len(y)):
             predictions_matrix[j][i] = y[j] * s.alpha
 
-    for i, s in enumerate(boost):
-        predictions_matrix[boost[i].indexes, i] *= -1
+    for i in range(len(boost)):
+        predictions_matrix[boost[i].train_fail_indexes, i] *= -1
 
     return np.array(
         [-1 if i == -1 else 1 for i in np.sign(np.sum(predictions_matrix, axis=1))]
@@ -69,6 +69,5 @@ def calculate_error(boost: list[Stump], y: np.ndarray):
 
 
 def split_dataset(dataset: pd.DataFrame, test_ratio=0.30):
-    """Splits a pandas dataframe in two."""
     test_indices = np.random.rand(len(dataset)) < test_ratio
     return dataset[~test_indices].reset_index(), dataset[test_indices].reset_index()

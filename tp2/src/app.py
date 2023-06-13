@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
 from src.dataset import DataSet
 
 # |%%--%%| <ObC6RCKtJA|kIfJYDnDfv>
@@ -12,20 +13,9 @@ dataset = DataSet(
 
 # dataset = DataSet("Vampire", ["Y", "N"], "N", "Y", "sample.csv")
 
-# |%%--%%| <0DPZ6Su9EB|1g88qWcOq5>
+# |%%--%%| <0DPZ6Su9EB|4TeWIqUUK2>
 
-# SIZE = 10
-# errors_per_stumps = np.zeros(SIZE)
-#
-# for i in range(SIZE):
-#     errors_per_stumps[i] = dataset.boost(i)
-#
-# plt.plot(np.linspace(1, SIZE + 1, SIZE), errors_per_stumps)
-
-
-# |%%--%%| <1g88qWcOq5|4TeWIqUUK2>
-
-SIZE = 15
+SIZE = 20
 errors = np.zeros(SIZE)
 for i in np.arange(1, SIZE + 1):
     boost = dataset.boost(i)

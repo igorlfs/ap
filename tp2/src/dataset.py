@@ -1,31 +1,38 @@
 import numpy as np
 import pandas as pd
-from src.util import Boost, Stump, calculate_error, split_dataset
+
+from src.util import Boost, Stump, split_dataset
 
 
 class DataSet:
-    def __init__(self, label: str, values: list[str], false: str, true: str, path: str):
-        self.label = label
-        self.values = values
+    def __init__(
+        self, label_column: str, x_values: list[str], false: str, true: str, path: str
+    ):
+        self.label_column = label_column
+        self.x_values = x_values
         self.false = false
         self.true = true
+
         # Ignore o ID dos vampiros
         df = pd.read_csv(path, usecols=lambda x: x != "id")
         # Shuffle
         self.df = df.sample(frac=1).reset_index(drop=True)
+
         self.x_train, self.x_test = split_dataset(self.df)
         self.y_train = (
-            self.x_train[self.label]
+            self.x_train[self.label_column]
             .apply(lambda x: -1 if x == self.false else 1)
             .to_numpy()
         )
         self.y_test = (
-            self.x_test[self.label]
+            self.x_test[self.label_column]
             .apply(lambda x: -1 if x == self.false else 1)
             .to_numpy()
         )
         self.y = (
-            self.df[self.label].apply(lambda x: -1 if x == self.false else 1).to_numpy()
+            self.df[self.label_column]
+            .apply(lambda x: -1 if x == self.false else 1)
+            .to_numpy()
         )
         self.weights = np.full(len(self.x_train), 1 / len(self.x_train))
         self._gen_stumps()
@@ -33,37 +40,37 @@ class DataSet:
     def _gen_stumps(self):
         stumps: list[Stump] = []
         for column in self.x_train.columns:
-            if column != self.label:
-                for v in self.values:
-                    query = f"({column} == '{v}' and {self.label} == '{self.false}') or ({column} != '{v}' and {self.label} == '{self.true}')"
+            if column != self.label_column:
+                for v in self.x_values:
+                    query = f"({column} == '{v}' and {self.label_column} == '{self.false}') or ({column} != '{v}' and {self.label_column} == '{self.true}')"
                     fail_indexes = self.x_train.query(query).index.to_numpy()
                     stumps.append(Stump(fail_indexes, f"{column} == {v}", query))
 
-        QUERY_TRUE = f"{self.label} == '{self.false}'"
+        query_true = f"{self.label_column} == '{self.false}'"
         stumps.append(
-            Stump(self.x_train.query(QUERY_TRUE).index.to_numpy(), "TRUE", QUERY_TRUE)
+            Stump(self.x_train.query(query_true).index.to_numpy(), "TRUE", query_true)
         )
-        QUERY_FALSE = f"{self.label} != '{self.false}'"
+        query_false = f"{self.label_column} != '{self.false}'"
         stumps.append(
             Stump(
-                self.x_train.query(QUERY_FALSE).index.to_numpy(), "FALSE", QUERY_FALSE
+                self.x_train.query(query_false).index.to_numpy(), "FALSE", query_false
             )
         )
 
         self.stumps = stumps
 
     def calculate_test_error(self, boost: list[Stump]):
+        """Calcula o erro de teste com base na divisão do construtor."""
         new_stuff = []
         for stump in boost:
             new_stuff.append(self.x_test.query(stump.query).index.to_numpy())
         predictions_matrix = np.zeros((len(self.y_test), np.size(boost)))
 
         for i, s in enumerate(boost):
-            assert s.alpha != np.inf
             for j in range(len(self.y_test)):
                 predictions_matrix[j][i] = self.y_test[j] * s.alpha
 
-        for i, s in enumerate(boost):
+        for i in range(len(boost)):
             predictions_matrix[new_stuff[i], i] *= -1
 
         predictions = np.array(
@@ -77,10 +84,11 @@ class DataSet:
         return error_count / len(self.y_test)
 
     def boost(self, iterations: int, verbose: bool = False):
+        """Roda um Boost por com `iterations`."""
         boost = Boost(self.weights, self.stumps, self.y_train)
         for _ in range(iterations):
             boost.iteration()
         if verbose:
             for stump in boost.boost:
-                print(stump.name, stump.indexes)
+                print(stump.name, stump.train_fail_indexes)
         return boost
