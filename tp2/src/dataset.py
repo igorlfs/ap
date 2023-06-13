@@ -13,8 +13,7 @@ class DataSet:
         self.false = false
         self.true = true
 
-        # Ignore o ID dos vampiros
-        df = pd.read_csv(path, usecols=lambda x: x != "id")
+        df = pd.read_csv(path)
         # Shuffle
         self.df = df.sample(frac=1).reset_index(drop=True)
 
@@ -60,10 +59,9 @@ class DataSet:
         self.stumps = stumps
 
     def calculate_test_error(self, boost: list[Stump]):
-        """Calcula o erro de teste com base na divisão do construtor."""
-        new_stuff = []
+        test_fail_indexes = []
         for stump in boost:
-            new_stuff.append(self.x_test.query(stump.query).index.to_numpy())
+            test_fail_indexes.append(self.x_test.query(stump.query).index.to_numpy())
         predictions_matrix = np.zeros((len(self.y_test), np.size(boost)))
 
         for i, s in enumerate(boost):
@@ -71,7 +69,7 @@ class DataSet:
                 predictions_matrix[j][i] = self.y_test[j] * s.alpha
 
         for i in range(len(boost)):
-            predictions_matrix[new_stuff[i], i] *= -1
+            predictions_matrix[test_fail_indexes[i], i] *= -1
 
         predictions = np.array(
             [-1 if i == -1 else 1 for i in np.sign(np.sum(predictions_matrix, axis=1))]
@@ -84,7 +82,6 @@ class DataSet:
         return error_count / len(self.y_test)
 
     def boost(self, iterations: int, verbose: bool = False):
-        """Roda um Boost por com `iterations`."""
         boost = Boost(self.weights, self.stumps, self.y_train)
         for _ in range(iterations):
             boost.iteration()

@@ -68,6 +68,6 @@ def calculate_error(boost: list[Stump], y: np.ndarray):
     return error_count / len(y)
 
 
-def split_dataset(dataset: pd.DataFrame, test_ratio=0.30):
+def split_dataset(dataset: pd.DataFrame, test_ratio=0.20):
     test_indices = np.random.rand(len(dataset)) < test_ratio
     return dataset[~test_indices].reset_index(), dataset[test_indices].reset_index()
