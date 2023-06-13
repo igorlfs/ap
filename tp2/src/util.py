@@ -1,10 +1,12 @@
 import numpy as np
+import pandas as pd
 
 
 class Stump:
-    def __init__(self, indexes: np.ndarray, name: str):
+    def __init__(self, indexes: np.ndarray, name: str, query: str):
         self.indexes = indexes
         self.name = name
+        self.query = query
         self.alpha = np.inf
 
     def __str__(self):
@@ -64,3 +66,9 @@ def calculate_error(boost: list[Stump], y: np.ndarray):
         if predictions[i] != y[i]:
             error_count += 1
     return error_count / len(y)
+
+
+def split_dataset(dataset: pd.DataFrame, test_ratio=0.30):
+    """Splits a pandas dataframe in two."""
+    test_indices = np.random.rand(len(dataset)) < test_ratio
+    return dataset[~test_indices].reset_index(), dataset[test_indices].reset_index()
