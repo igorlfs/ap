@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.dataset import DataSet
+from src.util import DataSet
 
 # |%%--%%| <ObC6RCKtJA|kIfJYDnDfv>
 
@@ -9,13 +9,7 @@ dataset = DataSet(
     "label", ["x", "o", "b"], "negative", "positive", "data/tic-tac-toe.data"
 )
 
-# |%%--%%| <kIfJYDnDfv|vY4XuQBXV3>
-r"""°°°
-TODO:
-- Merge `src/dataset.py` and `src/util.py`
-- More tests
-°°°"""
-# |%%--%%| <vY4XuQBXV3|VSzvvd3cZ9>
+# |%%--%%| <kIfJYDnDfv|VSzvvd3cZ9>
 
 N = 29
 K = 5

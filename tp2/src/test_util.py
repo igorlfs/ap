@@ -1,8 +1,7 @@
 import numpy as np
 from numpy.testing import assert_array_almost_equal
 
-from src.dataset import DataSet
-from src.util import Stump, boosting, get_predictions
+from src.util import DataSet, Stump, boosting, calculate_test_error, get_predictions
 
 
 def test_get_predictions():
@@ -10,7 +9,7 @@ def test_get_predictions():
     s1.alpha = 0.2
     labels = np.array([1, 1, 1, 1, 1, 1, 1, -1, -1, -1])
 
-    actual = get_predictions([s1], labels)
+    actual = get_predictions([s1], [s1.train_fail_indexes], labels)
     expected = np.array([1, 1, -1, 1, 1, 1, 1, -1, -1, 1])
 
     assert np.array_equal(actual, expected)
@@ -38,3 +37,14 @@ def test_boosting():
     expected_alphas = 0.5 * np.array([np.log(4), np.log(3)])
 
     assert_array_almost_equal(actual_alphas, expected_alphas)
+
+
+def test_calculate_test_error():
+    dataset = DataSet("Vampire", ["Y", "N"], "N", "Y", "sample.csv")
+    stumps = dataset.gen_stumps(dataset.df)
+    boost = boosting(3, stumps, dataset.y)
+
+    actual = calculate_test_error(boost, dataset.df, dataset.y)
+    expected = 0.1
+
+    assert actual == expected
