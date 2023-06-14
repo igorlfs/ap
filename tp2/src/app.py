@@ -13,10 +13,30 @@ dataset = DataSet(
 
 N = 29
 K = 5
-test_error = np.zeros((N, K))
-for i in np.arange(1, N + 1):
-    test_error[i - 1] = dataset.cross_validation(K, i)
-plt.plot(np.linspace(1, N, N), test_error, scaley=False)
+
+test_error = np.array(
+    [dataset.cross_validation(K, i) for i in np.arange(1, N + 1)], dtype=float
+)
+
+x_range = np.linspace(1, N, N)
+avg = test_error.mean(axis=1)
+
+for i in range(K):
+    plt.plot(x_range, test_error[:, i], label=f"Split {i+1}")
+
+plt.plot(
+    x_range,
+    avg,
+    label="Average",
+    color="magenta",
+    linestyle="dashed",
+    linewidth=2,
+)
+
+plt.legend()
+
+plt.title("Error over number of Stumps")
+
 plt.axhline(y=0.2, color="black", linestyle="dashed")
 
 # |%%--%%| <VSzvvd3cZ9|AwFMm8Aebq>
