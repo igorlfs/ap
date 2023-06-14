@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import KFold
 
-from src.util import Boost, Stump, split_dataset
+from src.util import Stump, boosting
 
 
 class DataSet:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self, label_column: str, x_values: list[str], false: str, true: str, path: str
     ):
         self.label_column = label_column
@@ -13,79 +14,68 @@ class DataSet:
         self.false = false
         self.true = true
 
-        df = pd.read_csv(path)
-        # Shuffle
-        self.df = df.sample(frac=1).reset_index(drop=True)
-
-        self.x_train, self.x_test = split_dataset(self.df)
-        self.y_train = (
-            self.x_train[self.label_column]
-            .apply(lambda x: -1 if x == self.false else 1)
-            .to_numpy()
-        )
-        self.y_test = (
-            self.x_test[self.label_column]
-            .apply(lambda x: -1 if x == self.false else 1)
-            .to_numpy()
-        )
+        self.df = pd.read_csv(path)
         self.y = (
             self.df[self.label_column]
             .apply(lambda x: -1 if x == self.false else 1)
             .to_numpy()
         )
-        self.weights = np.full(len(self.x_train), 1 / len(self.x_train))
-        self._gen_stumps()
 
-    def _gen_stumps(self):
+    def cross_validation(self, num_folds: int, iterations: int):
+        kfold = KFold(n_splits=num_folds, shuffle=True)
+        errors = []
+
+        for train_index, test_index in kfold.split(self.df):
+            x_train, x_test = self.df.iloc[train_index], self.df.iloc[test_index]
+            y_train, y_test = self.y[train_index], self.y[test_index]
+
+            x_train = x_train.reset_index(drop=True)
+            x_test = x_test.reset_index(drop=True)
+
+            stumps = self.gen_stumps(x_train)
+
+            boost = boosting(iterations, stumps, y_train)
+            error = calculate_test_error(boost, x_test, y_test)
+            errors.append(error)
+        return errors
+
+    def gen_stumps(self, x: pd.DataFrame):
         stumps: list[Stump] = []
-        for column in self.x_train.columns:
+
+        for column in x.columns:
             if column != self.label_column:
                 for v in self.x_values:
                     query = f"({column} == '{v}' and {self.label_column} == '{self.false}') or ({column} != '{v}' and {self.label_column} == '{self.true}')"
-                    fail_indexes = self.x_train.query(query).index.to_numpy()
+                    fail_indexes = x.query(query).index.to_numpy()
                     stumps.append(Stump(fail_indexes, f"{column} == {v}", query))
 
         query_true = f"{self.label_column} == '{self.false}'"
-        stumps.append(
-            Stump(self.x_train.query(query_true).index.to_numpy(), "TRUE", query_true)
-        )
+        stumps.append(Stump(x.query(query_true).index.to_numpy(), "TRUE", query_true))
         query_false = f"{self.label_column} != '{self.false}'"
-        stumps.append(
-            Stump(
-                self.x_train.query(query_false).index.to_numpy(), "FALSE", query_false
-            )
-        )
+        stumps.append(Stump(x.query(query_false).index.to_numpy(), "FALSE", query_false))
 
-        self.stumps = stumps
+        return stumps
 
-    def calculate_test_error(self, boost: list[Stump]):
-        test_fail_indexes = []
-        for stump in boost:
-            test_fail_indexes.append(self.x_test.query(stump.query).index.to_numpy())
-        predictions_matrix = np.zeros((len(self.y_test), np.size(boost)))
 
-        for i, s in enumerate(boost):
-            for j in range(len(self.y_test)):
-                predictions_matrix[j][i] = self.y_test[j] * s.alpha
+def calculate_test_error(boost: list[Stump], x: pd.DataFrame, y: pd.DataFrame):
+    fail_indexes = []
+    for stump in boost:
+        fail_indexes.append(x.query(stump.query).index.to_numpy())
+    predictions_matrix = np.zeros((len(y), np.size(boost)))
 
-        for i in range(len(boost)):
-            predictions_matrix[test_fail_indexes[i], i] *= -1
+    for i, s in enumerate(boost):
+        for j in range(len(y)):
+            predictions_matrix[j][i] = y[j] * s.alpha
 
-        predictions = np.array(
-            [-1 if i == -1 else 1 for i in np.sign(np.sum(predictions_matrix, axis=1))]
-        )
+    for i in range(len(boost)):
+        predictions_matrix[fail_indexes[i], i] *= -1
 
-        error_count = 0
-        for i in range(len(self.y_test)):
-            if predictions[i] != self.y_test[i]:
-                error_count += 1
-        return error_count / len(self.y_test)
+    predictions = np.array(
+        [-1 if i == -1 else 1 for i in np.sign(np.sum(predictions_matrix, axis=1))]
+    )
 
-    def boost(self, iterations: int, verbose: bool = False):
-        boost = Boost(self.weights, self.stumps, self.y_train)
-        for _ in range(iterations):
-            boost.iteration()
-        if verbose:
-            for stump in boost.boost:
-                print(stump.name, stump.train_fail_indexes)
-        return boost
+    error_count = 0
+    for i in range(len(y)):
+        if predictions[i] != y[i]:
+            error_count += 1
+    return error_count / len(y)

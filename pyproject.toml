@@ -14,7 +14,11 @@ seaborn = "^0.12.2"
 pycairo = "^1.23.0"
 pygobject = "^3.44.1"
 pytest = "^7.3.2"
+scikit-learn = "^1.2.2"
 
+
+[tool.black]
+line-length = 90
 
 [build-system]
 requires = ["poetry-core"]

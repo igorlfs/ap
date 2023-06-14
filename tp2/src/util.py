@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 class Stump:
@@ -14,33 +13,6 @@ class Stump:
 
     def __repr__(self):
         return str(self)
-
-
-class Boost:
-    def __init__(self, weights: np.ndarray, stumps: list[Stump], y: np.ndarray):
-        self.weights = weights.copy()
-        self.stumps = stumps.copy()
-        self.y = y
-        self.boost: list[Stump] = []
-
-    def iteration(self):
-        best_stump = min(self.stumps, key=lambda s: np.sum(self.weights[s.train_fail_indexes]))
-
-        error = np.sum(self.weights[best_stump.train_fail_indexes])
-        alpha: float = 0.5 * (np.log(1 - error) - np.log(error))
-
-        best_stump.alpha = alpha
-        self.boost.append(best_stump)
-
-        # update weights
-        predictions = get_predictions([best_stump], self.y)
-        exponent = -alpha * predictions * self.y
-        self.weights = self.weights * np.exp(exponent)
-        normalizer = np.sum(self.weights)
-        self.weights = self.weights / normalizer
-
-        self.stumps.remove(best_stump)
-        return calculate_error(self.boost, self.y)
 
 
 def get_predictions(boost: list[Stump], y: np.ndarray) -> np.ndarray:
@@ -59,15 +31,25 @@ def get_predictions(boost: list[Stump], y: np.ndarray) -> np.ndarray:
     )
 
 
-def calculate_error(boost: list[Stump], y: np.ndarray):
-    predictions = get_predictions(boost, y)
-    error_count = 0
-    for i in range(len(y)):
-        if predictions[i] != y[i]:
-            error_count += 1
-    return error_count / len(y)
+def boosting(iterations: int, stumps: list[Stump], y: np.ndarray):
+    weights = np.full(len(y), 1 / len(y))
+    stumps_copy = stumps.copy()
+    boost: list[Stump] = []
+    for _ in range(iterations):
+        best_stump = min(stumps_copy, key=lambda s: np.sum(weights[s.train_fail_indexes]))
 
+        error = np.sum(weights[best_stump.train_fail_indexes])
+        alpha = 0.5 * (np.log(1 - error) - np.log(error))
 
-def split_dataset(dataset: pd.DataFrame, test_ratio=0.20):
-    test_indices = np.random.rand(len(dataset)) < test_ratio
-    return dataset[~test_indices].reset_index(), dataset[test_indices].reset_index()
+        best_stump.alpha = alpha
+        boost.append(best_stump)
+
+        # update weights
+        predictions = get_predictions([best_stump], y)
+        exponent = -alpha * predictions * y
+        weights = weights * np.exp(exponent)
+        normalizer = np.sum(weights)
+        weights = weights / normalizer
+
+        stumps_copy.remove(best_stump)
+    return boost
