@@ -5,3 +5,6 @@
 tp1/report/report.*
 !tp1/report/report.tex
 !tp1/report/report.pdf
+tp2/report/report.*
+!tp2/report/report.tex
+!tp2/report/report.pdf
