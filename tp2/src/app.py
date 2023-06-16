@@ -22,7 +22,7 @@ x_range = np.linspace(1, N, N)
 avg = test_error.mean(axis=1)
 
 for i in range(K):
-    plt.plot(x_range, test_error[:, i], label=f"Split {i+1}")
+    plt.plot(x_range, test_error[:, i], label=f"Split {i+1}", linewidth=0.8)
 
 plt.plot(
     x_range,

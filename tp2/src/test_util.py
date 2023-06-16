@@ -48,3 +48,14 @@ def test_calculate_test_error():
     expected = 0.1
 
     assert actual == expected
+
+
+def test_boosting_():
+    dataset = DataSet(
+        "label", ["x", "o", "b"], "negative", "positive", "data/tic-tac-toe.data"
+    )
+    stumps = dataset.gen_stumps(dataset.df)
+    boost = boosting(28, stumps, dataset.y)
+    print("")
+    for stump in boost:
+        print(stump.name, stump.alpha)
