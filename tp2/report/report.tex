@@ -9,6 +9,7 @@
 \graphicspath{{./images/}}            % Localização das imagens
 \usepackage{fancyhdr}                 % Header estilo DCC
 \setlength{\headheight}{24pt}
+\usepackage{fontspec}
 
 \title{Trabalho Prático II}
 \author{Igor Lacerda Faria da Silva}
@@ -40,9 +41,15 @@ Foi usada validação cruzada (\textit{5-fold}) para avaliar o desempenho do mod
 	\begin{center}
 		{\includegraphics[height=7cm]{./images/error_per_stumps.png}}
 	\end{center}
-	\caption{Erro pelo número de \textit{stumps}, na validação cruzada. \label{fig:aeh}}
+	\caption{Média do erro pelo número de \textit{stumps}, após a validação cruzada. O desempenho do modelo, de forma geral, foi satisfatório. Para até 100 stumps, o erro chegou a ser menor 2\%. \label{fig:unique}}
 \end{figure}
 
-O desempenho do modelo, de forma geral, não foi satisfatório. É incomum que alguma divisão da validação cruzada atinga a “barreira” de 20\% de erro, e a média raramente fica abaixo de 25\%. É possível perceber uma melhora no desempenho, conforme são adicionados mais \textit{stumps}, mas a partir de cerca de 20 \textit{stumps}, o desempenho piora drasticamente. Presumivelmente isso acontece porque são adicionados vários \textit{stumps} da mesma classe, o que tende a degradar o modelo.
+\subsection*{Implementação}
+
+O trabalho foi implementado em \textit{Python}. Foram usadas classes para representar os \textit{stumps} e um objeto \texttt{Dataset}, que generaliza o programa. A cada \texttt{Stump} é associado: um vetor de indices onde o \textit{stump} erra no treino (para facilitar o cálculo dos erros), um nome descritivo, uma \textit{busca} para ser realizada no \texttt{Dataset} e um alfa, para se realizar as predições. Por outro lado, o \texttt{Dataset} contém uma \textit{string} para representar o nome da coluna que contém as \textit{labels}, os possíveis valores que $x$ pode assumir, os valores ``verdadeiro'' e ``falso'' para a \textit{label} do conjunto. O próprio \textit{dataframe} é armazenado, assim como um vetor com as \textit{labels} ``ajustadas'' para -1 e 1.
+
+O principal método do programa realiza a validação cruzada, com auxílio do \texttt{KFold} do \textit{sklearn}. Ele gera os 56 $(2*3*9+2)$\footnote{\textit{label} (verdadeiro ou falso) * possíveis valores de $x$ ('x','o','b') * número de posições + ``chutar'' tudo falso ou verdadeiro.} \textit{stumps} para cada \textit{split} com a função \texttt{gen\_stumps}, que faz as buscas nos \textit{dataframes} de treino e, principalmente, armazena os índices de erro. Em seguida, é realizado o \textit{boosting} propriamente dito, na função \texttt{boosting}. A implementação teve como inspiração os \textit{slides} da matéria e não fez nenhuma alteração relevante. Por fim, é calculado o erro, em \texttt{calculate\_test\_error}. Para fazer isso, foram usadas as \textit{queries} para se obter o valor esperado e a comparação com este poder ser realizada.
+
+Foram realizados testes simples com base nos exemplos dos \textit{slides}, que se encontram no arquivo \texttt{src/test\_util.py}. Eles podem ser rodados com o comando \texttt{pytest}. O arquivo principal (\texttt{src/app.py}) roda a função de validação cruzada e faz um gráfico da evolução dos erros, como o adicionado neste relatório.
 
 \end{document}

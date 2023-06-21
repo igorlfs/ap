@@ -57,14 +57,18 @@ class DataSet:
         for column in x.columns:
             if column != self.label_column:
                 for v in self.x_values:
-                    query = f"({column} == '{v}' and {self.label_column} == '{self.false}') or ({column} != '{v}' and {self.label_column} == '{self.true}')"
-                    fail_indexes = x.query(query).index.to_numpy()
-                    stumps.append(Stump(fail_indexes, f"{column} == {v}", query))
+                    query_true = f"({column} == '{v}' and {self.label_column} == '{self.false}') or ({column} != '{v}' and {self.label_column} == '{self.true}')"
+                    fail_indexes = x.query(query_true).index.to_numpy()
+                    stumps.append(Stump(fail_indexes, f"{column} == {v}", query_true))
 
-        query_true = f"{self.label_column} == '{self.false}'"
-        stumps.append(Stump(x.query(query_true).index.to_numpy(), "TRUE", query_true))
-        query_false = f"{self.label_column} != '{self.false}'"
-        stumps.append(Stump(x.query(query_false).index.to_numpy(), "FALSE", query_false))
+                    query_false = f"({column} == '{v}' and {self.label_column} != '{self.false}') or ({column} != '{v}' and {self.label_column} != '{self.true}')"
+                    fail_indexes = x.query(query_false).index.to_numpy()
+                    stumps.append(Stump(fail_indexes, f"{column} != {v}", query_false))
+
+        all_true = f"{self.label_column} == '{self.false}'"
+        stumps.append(Stump(x.query(all_true).index.to_numpy(), "TRUE", all_true))
+        all_false = f"{self.label_column} != '{self.false}'"
+        stumps.append(Stump(x.query(all_false).index.to_numpy(), "FALSE", all_false))
 
         return stumps
 
@@ -86,14 +90,13 @@ def get_predictions(boost: list[Stump], fail_indexes: list[np.ndarray], y: np.nd
 
 
 def boosting(iterations: int, stumps: list[Stump], y: np.ndarray):
-    weights = np.full(len(y), 1 / len(y))
-    stumps_copy = stumps.copy()
+    weights = np.full(len(y), 1 / len(y), dtype=np.float64)
     boost: list[Stump] = []
     for _ in range(iterations):
-        best_stump = min(stumps_copy, key=lambda s: np.sum(weights[s.train_fail_indexes]))
+        best_stump = min(stumps, key=lambda s: np.sum(weights[s.train_fail_indexes]))
 
-        error = np.sum(weights[best_stump.train_fail_indexes])
-        alpha = 0.5 * (np.log(1 - error) - np.log(error))
+        error: float = np.sum(weights[best_stump.train_fail_indexes])
+        alpha: float = 0.5 * (np.log(1 - error) - np.log(error))
 
         best_stump.alpha = alpha
         boost.append(best_stump)
@@ -101,11 +104,9 @@ def boosting(iterations: int, stumps: list[Stump], y: np.ndarray):
         # update weights
         predictions = get_predictions([best_stump], [best_stump.train_fail_indexes], y)
         exponent = -alpha * predictions * y
-        weights = weights * np.exp(exponent)
-        normalizer = np.sum(weights)
-        weights = weights / normalizer
+        weights_aux = weights * np.exp(exponent)
+        weights = weights_aux / np.sum(weights_aux)
 
-        stumps_copy.remove(best_stump)
     return boost
 
 
