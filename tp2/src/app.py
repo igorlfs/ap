@@ -2,13 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from src.util import DataSet
 
-# |%%--%%| <ObC6RCKtJA|kIfJYDnDfv>
+# |%%--%%| <ObC6RCKtJA|8JBzAiCnAw>
 
-dataset = DataSet(
-    "label", ["x", "o", "b"], "negative", "positive", "data/tic-tac-toe.data"
-)
+dataset = DataSet("label", "negative", "data/tic-tac-toe.data")
 
-# |%%--%%| <kIfJYDnDfv|VSzvvd3cZ9>
+# |%%--%%| <8JBzAiCnAw|VSzvvd3cZ9>
 
 N = 100  # Máximo de Stumps
 K = 5  # Número de folds

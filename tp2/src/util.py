@@ -18,20 +18,14 @@ class Stump:
 
 
 class DataSet:
-    def __init__(  # noqa: PLR0913
-        self, label_column: str, x_values: list[str], false: str, true: str, path: str
-    ):
+    def __init__(self, label_column: str, negative: str, path: str):
         self.label_column = label_column
-        self.x_values = x_values
-        self.false = false
-        self.true = true
 
         self.df = pd.read_csv(path)
-        self.y = (
-            self.df[self.label_column]
-            .apply(lambda x: -1 if x == self.false else 1)
-            .to_numpy()
+        self.df[label_column] = self.df[label_column].apply(
+            lambda x: -1 if x == negative else 1
         )
+        self.y = self.df[self.label_column].to_numpy()
 
     def cross_validation(self, num_folds: int, iterations: int):
         kfold = KFold(n_splits=num_folds, shuffle=True)
@@ -56,19 +50,19 @@ class DataSet:
 
         for column in x.columns:
             if column != self.label_column:
-                for v in self.x_values:
-                    query_true = f"({column} == '{v}' and {self.label_column} == '{self.false}') or ({column} != '{v}' and {self.label_column} == '{self.true}')"
+                for v in x[column].unique():
+                    query_true = f"(`{column}` == '{v}' and {self.label_column} == -1) or (`{column}` != '{v}' and {self.label_column} == 1)"
                     fail_indexes = x.query(query_true).index.to_numpy()
-                    stumps.append(Stump(fail_indexes, f"{column} == {v}", query_true))
+                    stumps.append(Stump(fail_indexes, f"`{column}` == {v}", query_true))
 
-                    query_false = f"({column} == '{v}' and {self.label_column} != '{self.false}') or ({column} != '{v}' and {self.label_column} != '{self.true}')"
+                    query_false = f"(`{column}` == '{v}' and {self.label_column} != -1) or (`{column}` != '{v}' and {self.label_column} != 1)"
                     fail_indexes = x.query(query_false).index.to_numpy()
-                    stumps.append(Stump(fail_indexes, f"{column} != {v}", query_false))
+                    stumps.append(Stump(fail_indexes, f"`{column}` != {v}", query_false))
 
-        all_true = f"{self.label_column} == '{self.false}'"
-        stumps.append(Stump(x.query(all_true).index.to_numpy(), "TRUE", all_true))
-        all_false = f"{self.label_column} != '{self.false}'"
+        all_false = f"{self.label_column} == -1"
         stumps.append(Stump(x.query(all_false).index.to_numpy(), "FALSE", all_false))
+        all_true = f"{self.label_column} == 1"
+        stumps.append(Stump(x.query(all_true).index.to_numpy(), "TRUE", all_true))
 
         return stumps
 

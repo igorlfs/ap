@@ -16,7 +16,7 @@ def test_get_predictions():
 
 
 def test_boosting():
-    dataset = DataSet("Vampire", ["Y", "N"], "N", "Y", "sample.csv")
+    dataset = DataSet("Vampire", "N", "sample.csv")
     stumps = dataset.gen_stumps(dataset.df)
 
     boost = boosting(2, stumps, dataset.y)
@@ -25,7 +25,7 @@ def test_boosting():
     for stump in boost:
         actual_names.append(stump.name)
 
-    expected_names = ["Sparkly == Y", "Evil == Y"]
+    expected_names = ["`Sparkly` == Y", "`Evil` != N"]
 
     assert actual_names == expected_names
 
@@ -39,7 +39,7 @@ def test_boosting():
 
 
 def test_calculate_test_error():
-    dataset = DataSet("Vampire", ["Y", "N"], "N", "Y", "sample.csv")
+    dataset = DataSet("Vampire", "N", "sample.csv")
     stumps = dataset.gen_stumps(dataset.df)
     boost = boosting(3, stumps, dataset.y)
 
