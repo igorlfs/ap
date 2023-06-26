@@ -366,6 +366,22 @@ files = [
 six = "*"
 
 [[package]]
+name = "graphviz"
+version = "0.20.1"
+description = "Simple Python interface for Graphviz"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "graphviz-0.20.1-py3-none-any.whl", hash = "sha256:587c58a223b51611c0cf461132da386edd896a029524ca61a1462b880bf97977"},
+    {file = "graphviz-0.20.1.zip", hash = "sha256:8c58f14adaa3b947daf26c19bc1e98c4e0702cdc31cf99153e6f06904d492bf8"},
+]
+
+[package.extras]
+dev = ["flake8", "pep8-naming", "tox (>=3)", "twine", "wheel"]
+docs = ["sphinx (>=5)", "sphinx-autodoc-typehints", "sphinx-rtd-theme"]
+test = ["coverage", "mock (>=4)", "pytest (>=7)", "pytest-cov", "pytest-mock (>=3)"]
+
+[[package]]
 name = "grpcio"
 version = "1.54.2"
 description = "HTTP/2-based RPC framework"
@@ -1105,6 +1121,20 @@ files = [
 ]
 
 [[package]]
+name = "pydot"
+version = "1.4.2"
+description = "Python interface to Graphviz's Dot"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "pydot-1.4.2-py2.py3-none-any.whl", hash = "sha256:66c98190c65b8d2e2382a441b4c0edfdb4f4c025ef9cb9874de478fb0793a451"},
+    {file = "pydot-1.4.2.tar.gz", hash = "sha256:248081a39bcb56784deb018977e428605c1c758f10897a339fce1dd728ff007d"},
+]
+
+[package.dependencies]
+pyparsing = ">=2.1.4"
+
+[[package]]
 name = "pygobject"
 version = "3.44.1"
 description = "Python bindings for GObject Introspection"
@@ -1443,6 +1473,67 @@ typing-extensions = ">=3.6.6"
 wrapt = ">=1.11.0,<1.15"
 
 [[package]]
+name = "tensorflow-addons"
+version = "0.20.0"
+description = "TensorFlow Addons."
+optional = false
+python-versions = "*"
+files = [
+    {file = "tensorflow_addons-0.20.0-cp310-cp310-macosx_10_14_x86_64.whl", hash = "sha256:64eb6e6a3ba488497945d6107f4f212a1d5fa4d3d98738755634f3dc54bd1f42"},
+    {file = "tensorflow_addons-0.20.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:2b248eb3fc0f5af87e936dd2140334d527d360315ea505c19d6c8d06c80d61fd"},
+    {file = "tensorflow_addons-0.20.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5d42238a04c66ee0a6aab75002eadbb184930073c9de257a948e2fb52b200b9a"},
+    {file = "tensorflow_addons-0.20.0-cp310-cp310-win_amd64.whl", hash = "sha256:6c234d4022136f76fd5f2576adb603ca8acc7b62bd6d375481b5f7fda720f470"},
+    {file = "tensorflow_addons-0.20.0-cp311-cp311-macosx_10_14_x86_64.whl", hash = "sha256:073ca8ad0389b8501e7756ea605de43837fc0ed13e37fe7151a1cd18af11dab9"},
+    {file = "tensorflow_addons-0.20.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f6ee5b9b8e50fc0c499281eb20ebe5fe4ebc21f7d1221cf7fd4433d0ebdbeaa6"},
+    {file = "tensorflow_addons-0.20.0-cp311-cp311-win_amd64.whl", hash = "sha256:94fdd37316c6562e9d83ca354157942f07217a49e63cc72cda8571838a520f9c"},
+    {file = "tensorflow_addons-0.20.0-cp38-cp38-macosx_10_14_x86_64.whl", hash = "sha256:e9167aca70b3b2b3005323723618917e308ba628cb4d29234ad2d168ce182b05"},
+    {file = "tensorflow_addons-0.20.0-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:ff59c72d63122141aa91d0fbdbe4e568ac9b3db00390b04fb0291493603786ef"},
+    {file = "tensorflow_addons-0.20.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:397874b022603f68375eb59d60dbaf85717c75fa887d0c5d6a6566ef3e4fe0ce"},
+    {file = "tensorflow_addons-0.20.0-cp38-cp38-win_amd64.whl", hash = "sha256:cf0d48760565fd501dab055a04d092690f0078bd3a70b04cc4b1db1a8d150417"},
+    {file = "tensorflow_addons-0.20.0-cp39-cp39-macosx_10_14_x86_64.whl", hash = "sha256:5f8196b830a99042faca1cea8755bc4fe869720621b81a708010371502eb3723"},
+    {file = "tensorflow_addons-0.20.0-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:cfb308b969dbdea92c97cab124566bc3908fe9dbc2769542e406471aa6861687"},
+    {file = "tensorflow_addons-0.20.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1ae9d92e66423a3198cdcfd0e2eb14541c5508fa29b8cde85e6b5adeb9130abf"},
+    {file = "tensorflow_addons-0.20.0-cp39-cp39-win_amd64.whl", hash = "sha256:86d969e639519ff0559ae51073297c8ac7b9014d71ca4e70e53d0a949f161027"},
+]
+
+[package.dependencies]
+packaging = "*"
+typeguard = ">=2.7,<3.0.0"
+
+[package.extras]
+tensorflow = ["tensorflow (>=2.10.0,<2.13.0)"]
+tensorflow-cpu = ["tensorflow-cpu (>=2.10.0,<2.13.0)"]
+tensorflow-gpu = ["tensorflow-gpu (>=2.10.0,<2.13.0)"]
+
+[[package]]
+name = "tensorflow-decision-forests"
+version = "1.3.0"
+description = "Collection of training and inference decision forest algorithms."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tensorflow_decision_forests-1.3.0-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:51d1989e951b36a524cc95d7ade74da9ef50768aa473ba56576f1efe453aafd7"},
+    {file = "tensorflow_decision_forests-1.3.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:809e232a1057c59aa2e1bba50fa95edcecfa1b1f8f4ee3c135323996926780ac"},
+    {file = "tensorflow_decision_forests-1.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dbd9b8563af9ad5d56381fe483d75e593c8ecb820f1f671a79cc74fafc906225"},
+    {file = "tensorflow_decision_forests-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b3b5456bd7bf72c14061e2c141087f8ac9d801dd4e428aa50ea0048a6070cd3e"},
+    {file = "tensorflow_decision_forests-1.3.0-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:123c6a896b90ca6e21cb571c3909e848a0242f799d9e93cd36891eb5016509f0"},
+    {file = "tensorflow_decision_forests-1.3.0-cp38-cp38-macosx_12_0_arm64.whl", hash = "sha256:1cb4d94689a2e9836b986706feeac3ae32f304311d92878ea93895386ed98128"},
+    {file = "tensorflow_decision_forests-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9729973a6b16ee75161cf2e8d68a8fddef3988db8e05734b94a3fad6780a916d"},
+    {file = "tensorflow_decision_forests-1.3.0-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:2a26b36bbd84b9c13661c43e856baa39c049d03d96a9b03bed52e7e2fa832c86"},
+    {file = "tensorflow_decision_forests-1.3.0-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:fbb2acfe0a2268d33a58045f152cb0b0b502dfcfffceb1a585ca7e53edc90b2b"},
+    {file = "tensorflow_decision_forests-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bb8b07d3e39e00153428288202e1393991308411c0af542afdc7b721856aa15a"},
+]
+
+[package.dependencies]
+absl-py = "*"
+numpy = "*"
+pandas = "*"
+six = "*"
+tensorflow = ">=2.12.0,<2.13.0"
+wheel = "*"
+wurlitzer = "*"
+
+[[package]]
 name = "tensorflow-estimator"
 version = "2.12.0"
 description = "TensorFlow Estimator."
@@ -1506,6 +1597,21 @@ files = [
     {file = "threadpoolctl-3.1.0-py3-none-any.whl", hash = "sha256:8b99adda265feb6773280df41eece7b2e6561b772d21ffd52e372f999024907b"},
     {file = "threadpoolctl-3.1.0.tar.gz", hash = "sha256:a335baacfaa4400ae1f0d8e3a58d6674d2f8828e3716bb2802c44955ad391380"},
 ]
+
+[[package]]
+name = "typeguard"
+version = "2.13.3"
+description = "Run-time type checker for Python"
+optional = false
+python-versions = ">=3.5.3"
+files = [
+    {file = "typeguard-2.13.3-py3-none-any.whl", hash = "sha256:5e3e3be01e887e7eafae5af63d1f36c849aaa94e3a0112097312aabfa16284f1"},
+    {file = "typeguard-2.13.3.tar.gz", hash = "sha256:00edaa8da3a133674796cf5ea87d9f4b4c367d77476e185e80251cc13dfbb8c4"},
+]
+
+[package.extras]
+doc = ["sphinx-autodoc-typehints (>=1.2.0)", "sphinx-rtd-theme"]
+test = ["mypy", "pytest", "typing-extensions"]
 
 [[package]]
 name = "typing-extensions"
@@ -1649,7 +1755,45 @@ files = [
     {file = "wrapt-1.14.1.tar.gz", hash = "sha256:380a85cf89e0e69b7cfbe2ea9f765f004ff419f34194018a6827ac0e3edfed4d"},
 ]
 
+[[package]]
+name = "wurlitzer"
+version = "3.0.3"
+description = "Capture C-level output in context managers"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "wurlitzer-3.0.3-py3-none-any.whl", hash = "sha256:ffcc584109f5ecd5244abfde4534f22140f8735a4890ce1abd90b4e503f5f427"},
+    {file = "wurlitzer-3.0.3.tar.gz", hash = "sha256:224f5fe70618be3872c05dfddc8c457191ec1870654596279fcc1edadebe3e5b"},
+]
+
+[[package]]
+name = "xgboost"
+version = "1.7.6"
+description = "XGBoost Python Package"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "xgboost-1.7.6-py3-none-macosx_10_15_x86_64.macosx_11_0_x86_64.macosx_12_0_x86_64.whl", hash = "sha256:4c34675b4d2678c624ddde5d45361e7e16046923e362e4e609b88353e6b87124"},
+    {file = "xgboost-1.7.6-py3-none-macosx_12_0_arm64.whl", hash = "sha256:59b4b366d2cafc7f645e87d897983a5b59be02876194b1d213bd8d8b811d8ce8"},
+    {file = "xgboost-1.7.6-py3-none-manylinux2014_aarch64.whl", hash = "sha256:281c3c6f4fbed2d36bf95cd02a641afa95e72e9abde70064056da5e76233e8df"},
+    {file = "xgboost-1.7.6-py3-none-manylinux2014_x86_64.whl", hash = "sha256:b1d5db49b199152d62bd9217c98760207d3de86d2b9d243260c573ffe638f80a"},
+    {file = "xgboost-1.7.6-py3-none-win_amd64.whl", hash = "sha256:127cf1f5e2ec25cd41429394c6719b87af1456ce583e89f0bffd35d02ad18bcb"},
+    {file = "xgboost-1.7.6.tar.gz", hash = "sha256:1c527554a400445e0c38186039ba1a00425dcdb4e40b37eed0e74cb39a159c47"},
+]
+
+[package.dependencies]
+numpy = "*"
+scipy = "*"
+
+[package.extras]
+dask = ["dask", "distributed", "pandas"]
+datatable = ["datatable"]
+pandas = ["pandas"]
+plotting = ["graphviz", "matplotlib"]
+pyspark = ["cloudpickle", "pyspark", "scikit-learn"]
+scikit-learn = ["scikit-learn"]
+
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "700eb6d407d8433efad1fd7069c2fc3410c5502794b5d858925b91157790da6c"
+content-hash = "ef60376b0d4ad35fd5362c0cb28c1cf03a751060698dcaf8c4c59c0bf4285229"
