@@ -1,4 +1,4 @@
-# TP 1
+# TPs
 
 ## Instruções
 
@@ -23,7 +23,9 @@ poetry shell
 E finalmente chame o programa com:
 
 ```bash
-python -m tp1.src
+python -m tpX.src
 ```
 
-**Atenção**: o *backend* do matplotlib foi configurado para rodar apenas com Linux.
+Substitua `X` pelo número do TP em questão.
+
+**Atenção**: o *backend* do `matplotlib` foi configurado para rodar apenas com Linux.
