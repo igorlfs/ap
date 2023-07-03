@@ -1,8 +1,6 @@
-# TPs
+# Instruções
 
-## Instruções
-
-Para rodar o programa principal deste trabalho, primeiro instale o gerenciador de dependências:
+Para rodar os trabalhos, primeiro instale o gerenciador de dependências:
 
 ```bash
 pip install poetry
@@ -20,7 +18,28 @@ Ative o ambiente virtual com:
 poetry shell
 ```
 
-E finalmente chame o programa com:
+# Projeto
+
+Uma vez que o ambiente virtual está ativo, inicie um interpretador:
+
+```bash
+cd proj
+python
+```
+
+No interpretador, importe o arquivo do algoritmo:
+
+```python
+import src.X
+```
+
+Em que X é um dos algoritmos: `adaboost`, `random_forest` ou `xgboost`. Certifique-se que os dados lhe foram fornecidos e estão na pasta `data`.
+
+Os arquivos `util.py` e `preprocessing.py` contém funções auxiliares. O arquivo `playground.py` é usado apenas para exploração.
+
+# TPs
+
+Para executar os TPs, execute os programas como módulos em Python:
 
 ```bash
 python -m tpX.src
