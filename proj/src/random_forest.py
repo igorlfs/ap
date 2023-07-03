@@ -1,58 +1,38 @@
 import matplotlib.pyplot as plt
 import tensorflow_decision_forests as tfdf
 from keras import metrics
-from src.util import f1_score, merge_df, split_dataset
+from src.preprocessing import sane_df
+from src.util import f1_score, split_df
 
 # |%%--%%| <nFyzjNUDgA|QxMwp8iBc5>
 
 tfdf.keras.set_training_logs_redirection(False)
 
-# |%%--%%| <QxMwp8iBc5|8zEsQiE4XY>
-
-useless_columns = [
-    "SuiteName",
-    "ProductName",
-    "HospitalCode",
-    "HospitalTypeCode",
-    "HospitalTypeName",
-    "CountryName",
-    "UnitCode",
-    "Beds",
-    "EpimedCode",
-    "MedicalRecord",
-]
+# |%%--%%| <QxMwp8iBc5|upptfJQ6Xm>
 
 df_paths = [
-    # "data/2-admission.csv",
+    "data/2-admission.csv",
     "data/3-comorbidity.csv",
     "data/4-admissionDiagnosis.csv",
     "data/5-complication.csv",
-    # "data/6-lab1h.csv",
     "data/7-icu.csv",
 ]
 
 
-df = merge_df(df_paths, useless_columns)
+df = sane_df(df_paths, True)
 
-# |%%--%%| <8zEsQiE4XY|vY5bf2P8th>
+# |%%--%%| <upptfJQ6Xm|9EcxWKJaSb>
 
 LABEL = "UnitDischargeName"
 COMPLEMENTARY = "HospitalDischargeName"
 
 # LABEL, COMPLEMENTARY = COMPLEMENTARY, LABEL
 
-# |%%--%%| <vY5bf2P8th|WF7AXd6CQs>
-
-# HACK
-df = df.query("UnitLengthStay <= 1")
-
-# |%%--%%| <WF7AXd6CQs|4nOBMphAN1>
-
 df = df.drop(columns=[COMPLEMENTARY])
 
-# |%%--%%| <4nOBMphAN1|ldiMzVIvG8>
+# |%%--%%| <9EcxWKJaSb|ldiMzVIvG8>
 
-train_ds_pd, test_ds_pd = split_dataset(df)
+train_ds_pd, test_ds_pd = split_df(df)
 
 # |%%--%%| <ldiMzVIvG8|VKRbwPXIXR>
 
@@ -61,8 +41,7 @@ test_ds = tfdf.keras.pd_dataframe_to_tf_dataset(test_ds_pd, label=LABEL)
 
 # |%%--%%| <VKRbwPXIXR|sLbeDXH0G0>
 
-model = tfdf.keras.RandomForestModel(num_trees=250)
-# model = tfdf.keras.GradientBoostedTreesModel()
+model = tfdf.keras.RandomForestModel(num_trees=200)
 
 # |%%--%%| <sLbeDXH0G0|lWK5FWKJLW>
 
@@ -90,16 +69,20 @@ for name, value in evaluation.items():
 f1 = f1_score(evaluation["precision"], evaluation["recall"])
 print(f"f1-score: {f1:.4f}")
 
-# |%%--%%| <Urvmza5dsw|yU9gaN9DTZ>
-
-with open("perfect.html", "w") as file:
-    file.write(tfdf.model_plotter.plot_model(model, max_depth=16))
-
-# |%%--%%| <yU9gaN9DTZ|JwjEYFfek3>
+# |%%--%%| <Urvmza5dsw|wIVkV0J9wU>
 
 model.summary()
 
-# |%%--%%| <JwjEYFfek3|PDVJIMLfYH>
+# |%%--%%| <wIVkV0J9wU|l66fcT2Fdj>
+
+model.make_inspector().variable_importances()["SUM_SCORE"][:10]
+
+# |%%--%%| <l66fcT2Fdj|yU9gaN9DTZ>
+
+with open("random-forest.html", "w") as file:
+    file.write(tfdf.model_plotter.plot_model(model, max_depth=16))
+
+# |%%--%%| <yU9gaN9DTZ|PDVJIMLfYH>
 
 logs = model.make_inspector().training_logs()
 

@@ -1,25 +1,17 @@
 import pandas as pd
-from src.util import merge_df, pretty_df
+from src.preprocessing import sane_df
+from src.util import pretty_df
 
 # |%%--%%| <zYifu2uHrk|wqBXaSf69y>
 
-useless_columns = [
-    "SuiteName",
-    "ProductName",
-    "HospitalCode",
-    "HospitalTypeCode",
-    "HospitalTypeName",
-    "CountryName",
-    "UnitCode",
-    "Beds",
-    "EpimedCode",
-    "MedicalRecord",
+df_paths = [
+    "data/2-admission.csv",
+    "data/3-comorbidity.csv",
+    "data/5-complication.csv",
+    "data/7-icu.csv",
 ]
 
-df_paths = ["data/3-comorbidity.csv", "data/5-complication.csv", "data/7-icu.csv"]
-
-
-df = merge_df(df_paths, useless_columns)
+df = sane_df(df_paths)
 
 # |%%--%%| <wqBXaSf69y|XYKuPfnkRQ>
 
@@ -28,26 +20,29 @@ COMPLEMENTARY = "HospitalDischargeName"
 
 # LABEL, COMPLEMENTARY = COMPLEMENTARY, LABEL
 
-# |%%--%%| <XYKuPfnkRQ|oz8u0YhtZv>
+# |%%--%%| <XYKuPfnkRQ|vdwiMXkqtd>
 
-# NOTE: Parece não ter muitos dados
-# df = df.drop(columns=["Mechanical Ventilation Duration"])
-# df = df.drop(columns=["Renal Replacement Therapy Duration"])
+df = df.drop(columns=[COMPLEMENTARY])
 
-# |%%--%%| <oz8u0YhtZv|1UglUEq3ui>
+# |%%--%%| <vdwiMXkqtd|1UglUEq3ui>
 
-# TODO: investigar a influência dessa coluna
 df = df.drop(columns=["HospitalLengthStay"])
 
 # |%%--%%| <1UglUEq3ui|ejWhdaskZn>
 
 len(df.query(f"{LABEL} == 'Óbito'"))
 
-# |%%--%%| <ejWhdaskZn|PftyYbkS90>
+# |%%--%%| <ejWhdaskZn|h1NXqQWYBc>
+
+for col in df.columns:
+    if "Falso" in df[col].unique():
+        df[col] = df[col].map({"Verdadeiro": True, "Falso": False})
+
+# |%%--%%| <h1NXqQWYBc|PftyYbkS90>
 
 data = []
 for col in df.columns:
-    if True in df[col].unique():
+    if df[col].dtype == bool:
         lives = len(df.query(f"`{col}` == True and {LABEL} == 'Óbito'"))
         dies = len(df.query(f"`{col}` == True and {LABEL} != 'Óbito'"))
         data.append([col, lives, dies, round(lives / (lives + dies), 2)])
@@ -56,6 +51,7 @@ df_col = pd.DataFrame(data=data, columns=["Col", "Óbito", "Alta", "Razão"])
 # |%%--%%| <PftyYbkS90|zWLzAXZUpU>
 
 dx = df_col.sort_values(by=["Razão", "Óbito"], ascending=False)
+pretty_df(dx)
 
 # |%%--%%| <zWLzAXZUpU|2w1Q9BjpCj>
 

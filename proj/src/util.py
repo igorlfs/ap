@@ -2,6 +2,7 @@ import subprocess
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 
 def pretty_df(df: pd.DataFrame | pd.Series):
@@ -12,35 +13,38 @@ def pretty_df(df: pd.DataFrame | pd.Series):
         print("Visidata not installed, skipping")
 
 
-def merge_df(paths: list[str], droppable_first: list[str]) -> pd.DataFrame:
-    """Une uma lista de CSVs com base em seus paths.
-
-    Exclui colunas em comum, exceto no primeiro dataframe, que recebe uma lista de quais
-    colunas excluir. Isso permite reter colunas que são úteis, apesar de aparecem várias vezes.
-    """
-
-    dataframes: list[pd.DataFrame] = []
-    for path in paths:
-        dataframes.append(pd.read_csv(path))
-
-    common_columns = set(dataframes[0].columns)
-    for df in dataframes[1:]:
-        common_columns = common_columns.intersection(set(df.columns))
-
-    # Merge dataframes, excluding common columns
-    return pd.concat(
-        [dataframes[0].drop(columns=droppable_first)]
-        + [df.drop(columns=common_columns) for df in dataframes[1:]],
-        axis=1,
-    )
-
-
-def split_dataset(dataset: pd.DataFrame, test_ratio=0.30):
+def split_df(df: pd.DataFrame, test_ratio=0.30):
     """Divide um dataframe em dois."""
-    test_indices = np.random.rand(len(dataset)) < test_ratio
-    return dataset[~test_indices], dataset[test_indices]
+    test_indices = np.random.rand(len(df)) < test_ratio
+    return df[~test_indices], df[test_indices]
+
+
+def train_test_split_df(df: pd.DataFrame, label: str):
+    """Divide um dataframe em teste e treino, com uma `label`"""
+    train_ds_pd, test_ds_pd = split_df(df)
+    x_train = train_ds_pd.drop(columns=[label])
+    y_train = train_ds_pd[label]
+    x_test = test_ds_pd.drop(columns=[label])
+    y_test = test_ds_pd[label]
+    return (x_train, y_train), (x_test, y_test)
 
 
 def f1_score(precision: float, recall: float) -> float:
-    """Calcula o f1_score com base na precisão e no recall."""
+    """Calcula o f1-score com base na precisão e no recall."""
     return (2 * precision * recall) / (precision + recall) if recall != 0 else -1
+
+
+def print_metrics(y_test: pd.Series, y_pred: list[int] | np.ndarray):
+    """Imprime métricas para os modelos baseados no scikit-learn."""
+    acc = accuracy_score(y_test, y_pred)
+    pre = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    print(f"Accuracy: {acc}")
+    print(f"Precision: {pre}")
+    print(f"Recall: {rec}")
+    print(f"F1-Score: {acc/pre}")
+
+
+def super_modelo(x_train: pd.DataFrame, y_train: pd.DataFrame, x_test: pd.DataFrame):
+    # Essa função só existe de exemplo e não está no repositório
+    return np.zeros(len(x_test))

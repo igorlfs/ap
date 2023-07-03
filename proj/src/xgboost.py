@@ -1,106 +1,44 @@
 import xgboost as xgb
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, f1_score
-from src.util import merge_df, split_dataset
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+from src.preprocessing import sane_df
+from src.util import print_metrics, train_test_split_df
 
 # |%%--%%| <CHegZyhACA|wqBXaSf69y>
 
-useless_columns = [
-    "SuiteName",
-    "ProductName",
-    "HospitalCode",
-    "HospitalTypeCode",
-    "HospitalTypeName",
-    "CountryName",
-    "UnitCode",
-    "Beds",
-    "EpimedCode",
-    "MedicalRecord",
+df_paths = [
+    "data/2-admission.csv",
+    "data/3-comorbidity.csv",
+    "data/4-admissionDiagnosis.csv",
+    "data/5-complication.csv",
+    "data/7-icu.csv",
 ]
 
-df_paths = ["data/3-comorbidity.csv", "data/5-complication.csv", "data/7-icu.csv"]
+df = sane_df(df_paths)
 
-
-df = merge_df(df_paths, useless_columns)
-
-# |%%--%%| <wqBXaSf69y|KtrGFZtI9M>
+# |%%--%%| <wqBXaSf69y|nYO1W3aICF>
 
 LABEL = "UnitDischargeName"
 COMPLEMENTARY = "HospitalDischargeName"
 
-# LABEL, COMPLEMENTARY = COMPLEMENTARY, LABEL
-
-# |%%--%%| <KtrGFZtI9M|f7EtOyzatd>
-
 df = df.drop(columns=[COMPLEMENTARY])
 
-# |%%--%%| <f7EtOyzatd|FneSK9lFbf>
-
-# O xgboost não suporta colunas não numéricas (categóricas)
-df = df.drop(columns=["AdmissionTypeName", "Decision Palliative Care Name"])
-
-# |%%--%%| <FneSK9lFbf|JChdWwmWEF>
-
-# Outras colunas que o xgboost não curte
-df = df.drop(
-    columns=[
-        "Chronic Health Status Name",
-        "Anatomic Tumor Site Name",
-        "HematologicalMalignancyTypeName",
-    ]
-)
-
-# |%%--%%| <JChdWwmWEF|2w1Q9BjpCj>
-
-df = df.query("UnitLengthStay <= 1")
-
-# |%%--%%| <2w1Q9BjpCj|7dkV7HYmCr>
-
-# NOTE: para as labels invertidas, uma está faltando
-df = df.dropna(axis=0, subset=LABEL)
-
-# |%%--%%| <7dkV7HYmCr|1gTIoZWiFB>
-
-# o xgboost exige um pipeline de dados mais chatinho
-for col in df.columns:
-    if "Falso" in df[col].unique():
-        df[col] = df[col].map({"Verdadeiro": True, "Falso": False})
-
-# |%%--%%| <1gTIoZWiFB|wMQMB5OxRS>
-
-for col in df.columns:
-    if False in df[col].unique():
-        df[col] = df[col].map({True: 1, False: 0})
-
-# |%%--%%| <wMQMB5OxRS|J2Si5blE7a>
+# |%%--%%| <nYO1W3aICF|J2Si5blE7a>
 
 for col in [LABEL]:
     df[col] = df[col].map({"Alta": 0, "Óbito": 1})
 
-# |%%--%%| <J2Si5blE7a|MG17maRBid>
+# |%%--%%| <J2Si5blE7a|cPmIaZLWaV>
 
-train_ds_pd, test_ds_pd = split_dataset(df)
+(x_train, y_train), (x_test, y_test) = train_test_split_df(df, LABEL)
 
-# |%%--%%| <MG17maRBid|QvwFdx84Bw>
+# |%%--%%| <cPmIaZLWaV|0xBwsGWL3s>
 
-X_train = train_ds_pd.drop(columns=[LABEL])
-Y_train = train_ds_pd[LABEL]
-
-# |%%--%%| <QvwFdx84Bw|QdnqbxSt3C>
-
-X_test = test_ds_pd.drop(columns=[LABEL])
-Y_test = test_ds_pd[LABEL]
-
-# |%%--%%| <QdnqbxSt3C|0xBwsGWL3s>
-
-dtrain = xgb.DMatrix(X_train, label=Y_train)
-dtest = xgb.DMatrix(X_test, label=Y_test)
+dtrain = xgb.DMatrix(x_train, label=y_train)
+dtest = xgb.DMatrix(x_test, label=y_test)
 
 # |%%--%%| <0xBwsGWL3s|wW7EWuwOQD>
 
-param = {"max_depth": 5, "eta": 1, "objective": "binary:logistic"}
-# param = {}
-param["nthread"] = 8
-param["eval_metric"] = "auc"
+param = {"max_depth": 3, "eta": 1, "objective": "binary:logistic", "eval_metric": "auc"}
 
 # |%%--%%| <wW7EWuwOQD|YmQkllg1oU>
 
@@ -113,19 +51,20 @@ bst = xgb.train(param, dtrain, num_round, evallist)
 
 # |%%--%%| <Nz25OmMlx6|4zjkxEAFMH>
 
-ypred = bst.predict(dtest)
+predictions = bst.predict(dtest)
 
 # |%%--%%| <4zjkxEAFMH|2yAgzcC3Mx>
 
-Y_pred = [1 if y > 0.5 else 0 for y in ypred]  # noqa: PLR2004
+THRESHOLD = 0.3
+y_pred = [1 if y > THRESHOLD else 0 for y in predictions]
 
 # |%%--%%| <2yAgzcC3Mx|GHL4QCp0Ap>
 
-f1_score(Y_test, Y_pred)
+print_metrics(y_test, y_pred)
 
 # |%%--%%| <GHL4QCp0Ap|cKxKZ0E110>
 
-cm = confusion_matrix(Y_test, Y_pred)
+cm = confusion_matrix(y_test, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm)
 disp.plot()
 
@@ -135,6 +74,6 @@ xgb.plot_importance(bst)
 
 # |%%--%%| <R06kJmXSDZ|lrbo2AVSOB>
 
-xgb.plot_tree(bst, num_trees=2)
+xgb.plot_tree(bst, num_trees=2, rankdir="LR")
 
 # |%%--%%| <lrbo2AVSOB|rVapEzYQL8>
