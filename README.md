@@ -20,6 +20,8 @@ poetry shell
 
 # Projeto
 
+Vídeo: <https://youtu.be/aSjzR3vxKYA>
+
 Uma vez que o ambiente virtual está ativo, inicie um interpretador:
 
 ```bash
