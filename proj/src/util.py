@@ -42,9 +42,4 @@ def print_metrics(y_test: pd.Series, y_pred: list[int] | np.ndarray):
     print(f"Accuracy: {acc}")
     print(f"Precision: {pre}")
     print(f"Recall: {rec}")
-    print(f"F1-Score: {acc/pre}")
-
-
-def super_modelo(x_train: pd.DataFrame, y_train: pd.DataFrame, x_test: pd.DataFrame):
-    # Essa função só existe de exemplo e não está no repositório
-    return np.zeros(len(x_test))
+    print(f"F1-Score: {f1_score(pre,rec)}")

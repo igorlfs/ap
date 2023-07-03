@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import tensorflow_decision_forests as tfdf
 from keras import metrics
 from src.preprocessing import sane_df
-from src.util import f1_score, split_df
+from src.util import f1_score, pretty_df, split_df
 
 # |%%--%%| <nFyzjNUDgA|QxMwp8iBc5>
 
@@ -15,13 +15,19 @@ df_paths = [
     "data/3-comorbidity.csv",
     "data/4-admissionDiagnosis.csv",
     "data/5-complication.csv",
+    # "data/6-lab1h.csv",
     "data/7-icu.csv",
+    # "data/8-secondaryDiagnosis.csv",
 ]
 
 
 df = sane_df(df_paths, True)
 
-# |%%--%%| <upptfJQ6Xm|9EcxWKJaSb>
+# |%%--%%| <upptfJQ6Xm|RR6ag6iR5g>
+
+pretty_df(df)
+
+# |%%--%%| <RR6ag6iR5g|9EcxWKJaSb>
 
 LABEL = "UnitDischargeName"
 COMPLEMENTARY = "HospitalDischargeName"
@@ -69,11 +75,7 @@ for name, value in evaluation.items():
 f1 = f1_score(evaluation["precision"], evaluation["recall"])
 print(f"f1-score: {f1:.4f}")
 
-# |%%--%%| <Urvmza5dsw|wIVkV0J9wU>
-
-model.summary()
-
-# |%%--%%| <wIVkV0J9wU|l66fcT2Fdj>
+# |%%--%%| <Urvmza5dsw|l66fcT2Fdj>
 
 model.make_inspector().variable_importances()["SUM_SCORE"][:10]
 
