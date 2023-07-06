@@ -39,6 +39,8 @@ Em que X é um dos algoritmos: `adaboost`, `random_forest` ou `xgboost`. Certifi
 
 Os arquivos `util.py` e `preprocessing.py` contém funções auxiliares. O arquivo `playground.py` é usado apenas para exploração.
 
+Para gerar alguns gráficos, pode ser necessário instalar no seu sistema o pacote `graphviz`.
+
 # TPs
 
 Para executar os TPs, execute os programas como módulos em Python:
